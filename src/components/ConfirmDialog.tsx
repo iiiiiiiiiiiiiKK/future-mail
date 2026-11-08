@@ -79,7 +79,7 @@ function DialogBody({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-end justify-center bg-black/55 p-0 backdrop-blur-sm sm:items-center sm:p-6"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/55 p-3 backdrop-blur-sm sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-label={title}
@@ -88,8 +88,8 @@ function DialogBody({
       }}
     >
       <div
-        className="surface-elevated w-full max-w-md animate-fade-up rounded-t-2xl p-5 sm:rounded-2xl sm:p-6"
-        style={{ maxHeight: '90dvh', overflowY: 'auto' }}
+        className="surface-elevated w-full max-w-md rounded-xl p-5 sm:rounded-2xl sm:p-6"
+        style={{ maxHeight: '85dvh', overflowY: 'auto' }}
       >
         <div className="flex items-start gap-3">
           {danger && (
