@@ -51,7 +51,7 @@ export function AuthorXLink({
       aria-label={`${t('brand.by')} ${AUTHOR_HANDLE} — X`}
       className={
         isFooter
-          ? 'group inline-flex items-center gap-2 text-xs transition-colors hover:text-[var(--accent)]'
+          ? 'group inline-flex min-h-[44px] items-center gap-2 text-xs transition-colors hover:text-[var(--accent)]'
           : 'group inline-flex min-h-[40px] items-center gap-2 rounded-full border px-3 text-xs transition-all hover:border-[var(--accent)] hover:bg-[var(--accent-soft)]'
       }
       style={

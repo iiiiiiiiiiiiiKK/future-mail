@@ -82,6 +82,8 @@
   html {
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
+    /* 装饰性光晕不得造成横向滚动（移动端必须完全无横向溢出） */
+    overflow-x: clip;
   }
 
   body {
@@ -301,7 +303,9 @@
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.3rem 0.65rem;
+    /* 移动端触控友好：最小高度 36px（加粗内边距而非固定高度，保持文字可读） */
+    min-height: 36px;
+    padding: 0.45rem 0.7rem;
     border-radius: 999px;
     border: 1px solid var(--border-subtle);
     font-size: 0.75rem;

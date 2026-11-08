@@ -70,10 +70,10 @@ export function AppShell({ children }: { children: ReactNode }) {
         }}
       >
         <div className="container-page flex h-14 items-center gap-3 sm:h-16">
-          {/* 品牌 */}
+          {/* 品牌：min-h 保证移动端触控尺寸 */}
           <Link
             to="/"
-            className="flex shrink-0 items-baseline gap-2"
+            className="flex min-h-[44px] shrink-0 items-center gap-2"
             aria-label={t('brand.name')}
           >
             <span

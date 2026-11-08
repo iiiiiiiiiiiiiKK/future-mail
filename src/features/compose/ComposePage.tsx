@@ -260,7 +260,8 @@ export function ComposePage() {
   };
 
   return (
-    <div className="container-page py-6 pb-24 sm:py-10">
+    /* 移动端需要为「固定操作条 + 底部导航」预留空间，避免遮挡最后一屏内容 */
+    <div className="container-page py-6 pb-[184px] sm:py-10 sm:pb-12">
       {/* 顶部栏 */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
@@ -370,7 +371,7 @@ export function ComposePage() {
                 <div className="flex items-center gap-2">
                   <span className="eyebrow shrink-0">{t('compose.writeTo')}</span>
                   <input
-                    className="min-w-0 flex-1 border-0 bg-transparent pb-1 font-serif text-base outline-none focus:outline-none"
+                    className="min-h-[36px] min-w-0 flex-1 border-0 bg-transparent pb-1 font-serif text-base outline-none focus:outline-none"
                     style={{
                       borderBottom: '1px solid var(--border-subtle)',
                       color: 'var(--accent)',
@@ -430,7 +431,7 @@ export function ComposePage() {
                   <button
                     type="button"
                     onClick={() => setTab(tab === 'write' ? 'preview' : 'write')}
-                    className="inline-flex items-center gap-1 text-[0.68rem] text-secondary hover:text-[var(--accent)]"
+                    className="inline-flex min-h-[36px] items-center gap-1 text-[0.68rem] text-secondary hover:text-[var(--accent)]"
                   >
                     <Eye className="h-3 w-3" />
                     {tab === 'write' ? t('compose.preview') : t('compose.content')}
@@ -638,7 +639,7 @@ export function ComposePage() {
                     {label}
                   </label>
                   <input
-                    className="field !min-h-[38px] text-sm"
+                    className="field !min-h-[40px] text-sm"
                     value={(mood[key] as string) ?? ''}
                     onChange={(e) => setMood({ ...mood, [key]: e.target.value })}
                     disabled={isLocked}
@@ -648,11 +649,12 @@ export function ComposePage() {
             </div>
           </section>
 
-          {/* 手机端固定操作条 */}
+          {/* 手机端固定操作条：悬浮在底部导航之上，并避让 iOS 安全区 */}
           <div className="sm:hidden">
             <div
-              className="fixed inset-x-0 bottom-[56px] z-30 border-t p-3 backdrop-blur-xl"
+              className="fixed inset-x-0 z-30 border-t p-3 backdrop-blur-xl"
               style={{
+                bottom: 'calc(56px + env(safe-area-inset-bottom, 0px))',
                 borderColor: 'var(--border-subtle)',
                 backgroundColor: 'color-mix(in srgb, var(--bg-app) 92%, transparent)',
               }}

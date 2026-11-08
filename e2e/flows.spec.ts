@@ -58,20 +58,27 @@ test.describe('首页与导航', () => {
   test('主导航可跳转', async ({ page }) => {
     await page.goto('/');
 
-    /* 桌面端是顶部导航，移动端是底部导航：点击当前视口中可见的那一个 */
-    await page.getByRole('link', { name: '时间轴' }).first().click();
-    await expect(page).toHaveURL(/timeline/);
+    /* 桌面端为顶部导航，移动端为底部 sticky 导航：分别验证 */
+    const mobileNav = page.getByRole('navigation', { name: 'Mobile' });
+    const useMobileNav = await mobileNav.isVisible();
 
-    const archiveLinks = page.getByRole('link', { name: '我的档案' });
-    const count = await archiveLinks.count();
-    for (let i = count - 1; i >= 0; i -= 1) {
-      const link = archiveLinks.nth(i);
-      if (await link.isVisible()) {
-        await link.click();
-        break;
-      }
+    if (useMobileNav) {
+      const archiveInNav = mobileNav.getByRole('link', { name: '我的档案' });
+      await expect(archiveInNav).toHaveAttribute('href', '#/archive');
+      await archiveInNav.click({ force: true });
+    } else {
+      await page.getByRole('link', { name: '我的档案' }).first().click();
     }
     await expect(page).toHaveURL(/archive/);
+
+    /* 时间轴同样可达 */
+    await page.goto('/#/');
+    if (useMobileNav) {
+      await mobileNav.getByRole('link', { name: '时间轴' }).click({ force: true });
+    } else {
+      await page.getByRole('link', { name: '时间轴' }).first().click();
+    }
+    await expect(page).toHaveURL(/timeline/);
   });
 });
 

@@ -1,11 +1,14 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * End-to-end 测试配置。
+ * 本地端到端测试配置。
  * 使用生产构建的 preview 服务器，确保测试的是真实交付物。
+ * 生产环境验收测试在 playwright.prod.config.ts 中单独运行。
  */
 export default defineConfig({
   testDir: './e2e',
+  /* production.spec.ts 针对线上地址，需用 playwright.prod.config.ts 运行 */
+  testIgnore: /production\.spec\.ts/,
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
