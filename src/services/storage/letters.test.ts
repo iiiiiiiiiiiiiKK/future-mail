@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import 'fake-indexeddb/auto';
 import { db } from '@/services/storage/db';
+import { DATA_VERSION } from '@/types';
 import {
   canTransition,
   cancelLetter,
@@ -75,7 +76,7 @@ describe('信件创建与编号', () => {
       scheduledOpenAt: future(5),
     });
     expect(letter.status).toBe('DRAFT');
-    expect(letter.version).toBe(1);
+    expect(letter.version).toBe(DATA_VERSION);
     expect(letter.privacy).toBe('private');
     expect(letter.replies).toEqual([]);
     expect(letter.starred).toBe(false);

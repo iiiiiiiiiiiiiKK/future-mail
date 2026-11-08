@@ -214,4 +214,40 @@ test.describe('生产环境移动端', () => {
     );
     expect(overflow).toBeLessThanOrEqual(1);
   });
+
+  test('移动端附件上传真实写入本地存储', async ({ page }) => {
+    await page.goto(`${PROD}#/compose`);
+    await page.getByPlaceholder('给五年后的自己').fill('线上附件验收');
+
+    const png = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg==',
+      'base64',
+    );
+    await page
+      .locator('input[type="file"]')
+      .first()
+      .setInputFiles({ name: 'prod.png', mimeType: 'image/png', buffer: png });
+
+    /* 附件出现在列表里（说明读取真实成功，而不是报错） */
+    await expect(page.getByText('prod.png')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText(/附件读取失败/)).toHaveCount(0);
+
+    /* IndexedDB 里确实有一条 blob 记录（WebKit 修复的回归检查） */
+    const stored = await page.evaluate(async () => {
+      const open = indexedDB.open('future-mail');
+      const db = await new Promise<IDBDatabase>((resolve, reject) => {
+        open.onerror = () => reject(open.error);
+        open.onsuccess = () => resolve(open.result);
+      });
+      const count = await new Promise<number>((resolve) => {
+        const tx = db.transaction('blobs', 'readonly');
+        const req = tx.objectStore('blobs').count();
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => resolve(-1);
+      });
+      db.close();
+      return count;
+    });
+    expect(stored).toBeGreaterThanOrEqual(1);
+  });
 });

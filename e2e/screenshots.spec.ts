@@ -139,7 +139,8 @@ async function seed(page: import('@playwright/test').Page) {
 }
 
 test.describe('产品截图', () => {
-  test.use({ viewport: { width: 1440, height: 960 } });
+  /* 固定 DPR，避免随运行的项目（iPhone 13 的 3x）放大成 4320px 巨图 */
+  test.use({ viewport: { width: 1440, height: 960 }, deviceScaleFactor: 1 });
 
   test('生成桌面端截图', async ({ page }) => {
     await seed(page);

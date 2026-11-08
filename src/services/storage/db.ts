@@ -32,6 +32,32 @@ class FutureMailDB extends Dexie {
       settings: 'id',
       meta: 'key',
     });
+
+    /**
+     * v2：附件二进制从 Blob 改为 ArrayBuffer。
+     * WebKit 无法可靠地把 Blob 结构化克隆进 IndexedDB，导致 iOS 上附件静默丢失。
+     * 这里把历史遗留的 Blob 行迁移为 ArrayBuffer，避免老数据读不出来。
+     */
+    this.version(2)
+      .stores({
+        letters: 'id, serial, status, scheduledOpenAt, createdAt, updatedAt, *tags, replyTo, starred',
+        blobs: 'key, letterId',
+        settings: 'id',
+        meta: 'key',
+      })
+      .upgrade(async (tx) => {
+        const legacy = (await tx.table('blobs').toArray()) as Array<
+          Record<string, unknown> & { key: string }
+        >;
+        for (const row of legacy) {
+          if (row.data || !row.blob) continue;
+          const oldBlob = row.blob;
+          if (typeof Blob !== 'undefined' && oldBlob instanceof Blob) {
+            const data = await oldBlob.arrayBuffer();
+            await tx.table('blobs').put({ ...row, data, blob: undefined });
+          }
+        }
+      });
   }
 }
 

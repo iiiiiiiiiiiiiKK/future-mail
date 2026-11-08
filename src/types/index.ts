@@ -4,7 +4,7 @@
  * 数据版本号用于后续迁移（见 services/storage/migrations.ts）。
  */
 
-export const DATA_VERSION = 1;
+export const DATA_VERSION = 2;
 
 /** 信件状态机：DRAFT → SEALED → READY → OPENED，任意未开启状态可 → CANCELLED */
 export type LetterStatus = 'DRAFT' | 'SEALED' | 'READY' | 'OPENED' | 'CANCELLED';
