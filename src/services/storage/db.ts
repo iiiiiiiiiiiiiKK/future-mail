@@ -119,40 +119,41 @@ export async function buildExportBundle(includeBlobs: boolean): Promise<ExportBu
   };
   if (includeBlobs) {
     const blobs = await db.blobs.toArray();
-    bundle.blobs = await Promise.all(
-      blobs.map(async (b) => ({
-        key: b.key,
-        letterId: b.letterId,
-        mimeType: b.mimeType,
-        name: b.name,
-        size: b.size,
-        base64: await blobToBase64(b.blob),
-      })),
-    );
+    bundle.blobs = blobs.map((b) => ({
+      key: b.key,
+      letterId: b.letterId,
+      mimeType: b.mimeType,
+      name: b.name,
+      size: b.size,
+      base64: arrayBufferToBase64(b.data),
+    }));
   }
   return bundle;
 }
 
-export function blobToBase64(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result;
-      if (typeof result !== 'string') {
-        reject(new Error('读取附件失败'));
-        return;
-      }
-      const comma = result.indexOf(',');
-      resolve(comma >= 0 ? result.slice(comma + 1) : result);
-    };
-    reader.onerror = () => reject(reader.error ?? new Error('读取附件失败'));
-    reader.readAsDataURL(blob);
-  });
+/** ArrayBuffer → base64（不依赖 FileReader，同步可靠） */
+export function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
 }
 
-export function base64ToBlob(base64: string, mimeType: string): Blob {
+/** base64 → ArrayBuffer */
+export function base64ToArrayBuffer(base64: string): ArrayBuffer {
   const binary = atob(base64);
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
-  return new Blob([bytes], { type: mimeType });
+  return bytes.buffer;
+}
+
+export function blobToBase64(blob: Blob): Promise<string> {
+  return blob.arrayBuffer().then(arrayBufferToBase64);
+}
+
+export function base64ToBlob(base64: string, mimeType: string): Blob {
+  return new Blob([base64ToArrayBuffer(base64)], { type: mimeType });
 }

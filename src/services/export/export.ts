@@ -1,9 +1,9 @@
 /**
  * 导出服务：JSON 全量备份、单封 Markdown、单封 PDF。
  * PDF 由浏览器端 jsPDF 生成，不联网。
+ * jsPDF 按需动态加载，避免把数 MB 的 PDF 引擎塞进首屏包体。
  */
 
-import { jsPDF } from 'jspdf';
 import type { Letter } from '@/types';
 import { buildExportBundle, db } from '@/services/storage/db';
 import { formatDate } from '@/utils/date';
@@ -100,6 +100,8 @@ function safeName(letter: Letter): string {
  * 为避免引入数 MB 的 CJK 字体，正文中文通过 canvas 截图方式保证可读。
  */
 export async function downloadLetterPdf(letter: Letter, lang: Lang): Promise<void> {
+  /* 动态加载：首屏不下载 PDF 引擎 */
+  const { jsPDF } = await import('jspdf');
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -263,7 +265,7 @@ export async function downloadAllAttachments(letter: Letter): Promise<number> {
   for (const attachment of letter.attachments) {
     const row = await db.blobs.get(attachment.blobKey);
     if (!row) continue;
-    downloadBlob(row.blob, attachment.name);
+    downloadBlob(new Blob([row.data], { type: row.mimeType }), attachment.name);
     count += 1;
     await new Promise((r) => setTimeout(r, 220));
   }

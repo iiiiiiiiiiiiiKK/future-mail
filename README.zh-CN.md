@@ -13,6 +13,10 @@
 
 作者 X — **[𝕏 @0xkillcoin](https://x.com/0xkillcoin)**
 
+### ▶ 在线体验 · [iiiiiiiiiiiiikk.github.io/future-mail](https://iiiiiiiiiiiiikk.github.io/future-mail/)
+
+**无需注册、无需安装。** 打开就能写，数据只留在你的浏览器里。
+
 ---
 
 ## 这是什么
@@ -271,6 +275,10 @@ src/
 
 本项目是静态 SPA，`base: './'` 且使用 `HashRouter`，任何静态托管都能跑，**不需要重写规则**。
 
+**当前状态：** 已部署到 GitHub Pages 并在线上完成验收 —
+<https://iiiiiiiiiiiiikk.github.io/future-mail/>（针对线上地址运行 16 个生产验收测试，全部通过，
+见 `e2e/production.spec.ts`）。
+
 ### GitHub Pages（自动）
 
 `.github/workflows/ci.yml` 会依次执行 类型检查 → Lint → 单测 → 构建 → E2E，
@@ -309,9 +317,13 @@ npm run build
   ├─ services/attachments.test.ts      8  类型/大小校验、blob 生命周期
   └─ utils/misc.test.ts               11  格式化、i18n、邮件未配置状态
 
-端到端（Playwright，真实浏览器 + 真实 IndexedDB）
-  desktop-chromium                  15 通过
-  mobile-safari（iPhone 13）         15 通过
+端到端，本地构建（Playwright，真实浏览器 + 真实 IndexedDB）  46 通过
+  desktop-chromium（1440×900）       23 通过
+  mobile-safari（iPhone 13）         23 通过
+
+端到端，线上部署（github.io 生产地址）                        16 通过
+  prod-desktop                       8 通过
+  prod-mobile（iPhone 13）            8 通过
 ```
 
 E2E 覆盖：桌面端**与**移动端菜单中的作者 X 链接、写信 → 自动保存 → 封存 → 档案、
@@ -319,9 +331,14 @@ E2E 覆盖：桌面端**与**移动端菜单中的作者 X 链接、写信 → �
 提前解封二次确认、回信创建、分享卡片 PNG 下载**并断言正文未出现在页面上**、
 JSON 导出 → 清空 → 导入往返、主题与语言切换后刷新仍保持、本地存储隐私提示。
 
+`e2e/mobile-audit.spec.ts` 在 390×844 视口下做自动化移动端审计：
+所有路由零横向溢出、最小触控尺寸、底部导航不遮挡主要操作、超长标题/收件人压力测试、
+以及 iOS 安全区支持。
+
 ```bash
 npm run typecheck && npm run lint && npm test && npm run build
-npm run test:e2e
+npm run test:e2e          # 本地构建
+npm run test:e2e:prod     # 针对线上部署
 ```
 
 ---

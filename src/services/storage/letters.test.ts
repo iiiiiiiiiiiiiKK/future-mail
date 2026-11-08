@@ -355,7 +355,7 @@ describe('删除与统计', () => {
       mimeType: 'text/plain',
       name: 'a.txt',
       size: 3,
-      blob: new Blob(['abc']),
+      data: new TextEncoder().encode('abc').buffer as ArrayBuffer,
       createdAt: new Date().toISOString(),
     });
     await db.letters.update(letter.id, {

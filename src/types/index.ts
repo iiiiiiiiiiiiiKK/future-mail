@@ -143,7 +143,13 @@ export interface AttachmentBlob {
   mimeType: string;
   name: string;
   size: number;
-  blob: Blob;
+  /**
+   * 二进制内容以 ArrayBuffer 存储，而不是 Blob/File。
+   * 原因：WebKit（Safari / iOS 全系浏览器）在部分情况下无法把 Blob 写入 IndexedDB，
+   * 结构化克隆会静默失败。ArrayBuffer 在所有浏览器里都能可靠持久化，
+   * 读取时再用 mimeType 重新构造 Blob。
+   */
+  data: ArrayBuffer;
   createdAt: string;
 }
 

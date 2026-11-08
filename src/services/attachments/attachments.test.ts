@@ -63,14 +63,17 @@ describe('saveAttachment', () => {
     expect(result.attachment.size).toBe(file.size);
     expect(await blobExists(result.attachment.blobKey)).toBe(true);
 
-    /* jsdom + fake-indexeddb 对 Blob 的结构化克隆不保留全部属性，
-       因此以存储行上的元数据作为断言依据（真实浏览器中 blob 完整可用）。 */
+    /* 二进制以 ArrayBuffer 存储（WebKit 下 Blob 结构化克隆不可靠），
+       读取时再按 mimeType 重建 Blob。 */
     const blob = await getBlob(result.attachment.blobKey);
     expect(blob).toBeTruthy();
+    expect(blob!.size).toBe(file.size);
+
     const row = await db.blobs.get(result.attachment.blobKey);
     expect(row?.size).toBe(file.size);
     expect(row?.mimeType).toBe('text/plain');
     expect(row?.letterId).toBe(letter.id);
+    expect(row?.data.byteLength).toBe(file.size);
   });
 
   it('拒绝超过大小限制的文件', async () => {

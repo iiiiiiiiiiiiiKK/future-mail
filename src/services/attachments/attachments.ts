@@ -4,7 +4,7 @@
  */
 
 import { db } from '@/services/storage/db';
-import type { Attachment, AttachmentKind } from '@/types';
+import type { Attachment, AttachmentBlob, AttachmentKind } from '@/types';
 import { newId } from '@/services/storage/letters';
 import { nowISO } from '@/utils/date';
 
@@ -59,13 +59,17 @@ export async function saveAttachment(
   };
 
   try {
+    /* 关键：以 ArrayBuffer 持久化。
+       WebKit（Safari/iOS）在部分情况下会让 Blob 的结构化克隆静默失败，
+       导致附件「看起来上传成功但实际没存」。ArrayBuffer 全平台可靠。 */
+    const data = await file.arrayBuffer();
     await db.blobs.put({
       key,
       letterId,
       mimeType: attachment.mimeType,
       name: file.name,
       size: file.size,
-      blob: file,
+      data,
       createdAt: attachment.createdAt,
     });
   } catch (error) {
@@ -110,15 +114,20 @@ export async function deleteAttachment(letterId: string, attachment: Attachment)
   });
 }
 
+/** 从存储行重建 Blob（ArrayBuffer + mimeType） */
+function rowToBlob(row: AttachmentBlob): Blob {
+  return new Blob([row.data], { type: row.mimeType });
+}
+
 export async function getBlobUrl(key: string): Promise<string | null> {
   const row = await db.blobs.get(key);
   if (!row) return null;
-  return URL.createObjectURL(row.blob);
+  return URL.createObjectURL(rowToBlob(row));
 }
 
 export async function getBlob(key: string): Promise<Blob | null> {
   const row = await db.blobs.get(key);
-  return row?.blob ?? null;
+  return row ? rowToBlob(row) : null;
 }
 
 /** 附件是否在数据中存在（用于检测损坏/缺失） */

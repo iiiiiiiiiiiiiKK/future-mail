@@ -13,6 +13,10 @@
 
 Author on X — **[𝕏 @0xkillcoin](https://x.com/0xkillcoin)**
 
+### ▶ Live demo · [iiiiiiiiiiiiikk.github.io/future-mail](https://iiiiiiiiiiiiikk.github.io/future-mail/)
+
+**No sign-up, no install.** Open it and write — everything stays in your browser.
+
 ---
 
 ## What is this?
@@ -295,6 +299,10 @@ client.
 The app is a static SPA with `base: './'` and `HashRouter`, so it runs on any
 static host with **no rewrite rules**.
 
+**Current status:** deployed to GitHub Pages and verified in production —
+<https://iiiiiiiiiiiiikk.github.io/future-mail/> (16 production acceptance tests
+passing against the live URL, see `e2e/production.spec.ts`).
+
 ### GitHub Pages (automatic)
 
 `.github/workflows/ci.yml` runs typecheck → lint → unit tests → build → E2E, then
@@ -333,9 +341,13 @@ Unit + integration (Vitest, fake-indexeddb)      81 passed
   ├─ services/attachments.test.ts      8  type/size validation, blob lifecycle
   └─ utils/misc.test.ts               11  formatting, i18n, email-not-configured
 
-End-to-end (Playwright, real browser + real IndexedDB)
-  desktop-chromium                  15 passed
-  mobile-safari (iPhone 13)         15 passed
+End-to-end, local build (Playwright, real browser + real IndexedDB)   46 passed
+  desktop-chromium (1440×900)       23 passed
+  mobile-safari (iPhone 13)         23 passed
+
+End-to-end, live deployment (github.io production URL)               16 passed
+  prod-desktop                       8 passed
+  prod-mobile (iPhone 13)            8 passed
 ```
 
 E2E covers: X author link on desktop **and** in the mobile menu, compose →
@@ -345,9 +357,15 @@ confirmation, reply creation, share card PNG download **with the body asserted
 absent**, JSON export → wipe → import round-trip, theme + language switching with
 reload persistence, and the local-storage privacy notice.
 
+`e2e/mobile-audit.spec.ts` adds an automated mobile audit on a 390×844 viewport:
+zero horizontal overflow on every route, minimum touch-target sizes, no bottom-nav
+occlusion of the primary action, long title/recipient stress test, and iOS
+safe-area support.
+
 ```bash
 npm run typecheck && npm run lint && npm test && npm run build
-npm run test:e2e
+npm run test:e2e          # local build
+npm run test:e2e:prod     # against the deployed site
 ```
 
 ---

@@ -7,7 +7,7 @@
 import type { ExportBundle, ImportResult, Letter } from '@/types';
 import { DATA_VERSION } from '@/types';
 import { db } from '@/services/storage/db';
-import { base64ToBlob } from '@/services/storage/db';
+import { base64ToArrayBuffer } from '@/services/storage/db';
 import { refreshDueLetters } from '@/services/storage/letters';
 import { nowISO } from '@/utils/date';
 import { newId } from '@/services/storage/letters';
@@ -206,7 +206,7 @@ export async function importBundle(
         mimeType: b.mimeType,
         name: b.name,
         size: b.size,
-        blob: base64ToBlob(b.base64, b.mimeType),
+        data: base64ToArrayBuffer(b.base64),
         createdAt: nowISO(),
       }));
     if (rows.length > 0) {
