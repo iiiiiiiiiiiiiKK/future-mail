@@ -155,6 +155,8 @@ npm run dev          # http://localhost:5173
 | `npm test` | Vitest 单元 + 集成测试（85 个） |
 | `npm run test:watch` | Vitest 监听模式 |
 | `npm run test:e2e` | Playwright 端到端测试（桌面 + iPhone 13） |
+| `npm run test:e2e:prod` | 针对线上地址的生产验收测试 |
+| `npm run screenshots` | 从真实构建重新生成 `docs/screenshots/` |
 
 ---
 
@@ -318,9 +320,9 @@ npm run build
   ├─ utils/misc.test.ts               11  格式化、i18n、邮件未配置状态
   └─ services/storage/blobs.test.ts    4  base64 ↔ ArrayBuffer、持久化字节校验
 
-端到端，本地构建（Playwright，真实浏览器 + 真实 IndexedDB）  56 通过
-  desktop-chromium（1440×900）       28 通过
-  mobile-safari（iPhone 13）         28 通过
+端到端，本地构建（Playwright，真实浏览器 + 真实 IndexedDB）  52 通过
+  desktop-chromium（1440×900）       26 通过
+  mobile-safari（iPhone 13）         26 通过
 
 端到端，线上部署（github.io 生产地址）                        18 通过
   prod-desktop                       9 通过

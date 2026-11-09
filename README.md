@@ -165,6 +165,8 @@ No backend, no API key, no database required. Open the page and start writing.
 | `npm test` | Vitest unit + integration tests (85 tests) |
 | `npm run test:watch` | Vitest in watch mode |
 | `npm run test:e2e` | Playwright end-to-end tests (desktop + iPhone 13) |
+| `npm run test:e2e:prod` | Acceptance tests against the deployed URL |
+| `npm run screenshots` | Regenerate `docs/screenshots/` from the real build |
 
 ---
 
@@ -342,9 +344,9 @@ Unit + integration (Vitest, fake-indexeddb)      85 passed
   ├─ utils/misc.test.ts               11  formatting, i18n, email-not-configured
   └─ services/storage/blobs.test.ts    4  base64 <-> ArrayBuffer, persisted bytes
 
-End-to-end, local build (Playwright, real browser + real IndexedDB)   56 passed
-  desktop-chromium (1440×900)       28 passed
-  mobile-safari (iPhone 13)         28 passed
+End-to-end, local build (Playwright, real browser + real IndexedDB)   52 passed
+  desktop-chromium (1440×900)       26 passed
+  mobile-safari (iPhone 13)         26 passed
 
 End-to-end, live deployment (github.io production URL)               18 passed
   prod-desktop                       9 passed
