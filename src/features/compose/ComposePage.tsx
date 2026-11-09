@@ -66,6 +66,13 @@ export function ComposePage() {
   );
   const [reminderDays, setReminderDays] = useState<number>(existing?.reminder?.daysBefore ?? 0);
   const [reminderEnabled, setReminderEnabled] = useState(existing?.reminder?.enabled ?? false);
+  /** 自定义提醒天数的输入草稿（空字符串表示与快捷选项重合） */
+  const [customDays, setCustomDays] = useState<string>(() => {
+    const d = existing?.reminder?.daysBefore ?? 0;
+    return d > 0 && d !== 7 && d !== 30 ? String(d) : '';
+  });
+  /** 是否处于「自定义天数」模式（不在 0/7/30 之内，或用户主动切到自定义） */
+  const isCustomReminder = reminderEnabled && customDays !== '';
   const [replyTo] = useState<string | undefined>(existing?.replyTo ?? replyToParam);
   const [tab, setTab] = useState<Tab>('write');
   const [confirmSeal, setConfirmSeal] = useState(false);
@@ -503,17 +510,70 @@ export function ComposePage() {
                     key={`${opt.on}-${opt.days}`}
                     type="button"
                     className="chip"
-                    data-active={reminderEnabled === opt.on && reminderDays === opt.days}
+                    data-active={
+                      reminderEnabled === opt.on &&
+                      reminderDays === opt.days &&
+                      !isCustomReminder
+                    }
                     disabled={isLocked}
                     onClick={() => {
                       setReminderEnabled(opt.on);
                       setReminderDays(opt.days);
+                      setCustomDays('');
                     }}
                   >
                     {opt.label}
                   </button>
                 ))}
+
+                {/* 自定义提醒天数（规格要求支持） */}
+                <button
+                  type="button"
+                  className="chip"
+                  data-active={reminderEnabled && isCustomReminder}
+                  disabled={isLocked}
+                  onClick={() => {
+                    setReminderEnabled(true);
+                    if (!isCustomReminder) {
+                      setCustomDays(String(reminderDays > 0 ? reminderDays : 3));
+                      setReminderDays(reminderDays > 0 ? reminderDays : 3);
+                    }
+                  }}
+                >
+                  {t('compose.reminderCustom')}
+                </button>
               </div>
+
+              {reminderEnabled && isCustomReminder && (
+                <div className="mt-2.5 flex items-center gap-2">
+                  <label
+                    className="eyebrow shrink-0"
+                    htmlFor="custom-reminder-days"
+                  >
+                    {t('compose.reminderDays')}
+                  </label>
+                  <input
+                    id="custom-reminder-days"
+                    type="number"
+                    min={1}
+                    max={3650}
+                    inputMode="numeric"
+                    className="field !min-h-[38px] w-24 text-sm"
+                    value={customDays}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/[^\d]/g, '');
+                      setCustomDays(raw);
+                      const n = Number(raw);
+                      if (Number.isFinite(n) && n >= 1) setReminderDays(Math.min(3650, n));
+                    }}
+                    disabled={isLocked}
+                  />
+                  <span className="text-[0.65rem] text-muted">
+                    {lang === 'zh' ? '天' : 'days'}
+                  </span>
+                </div>
+              )}
+
               {reminderEnabled && (
                 <p className="mt-2 text-[0.65rem] leading-relaxed text-muted">
                   {t('compose.reminderNote')}

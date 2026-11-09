@@ -95,6 +95,16 @@ not from mockups.
 - After sealing, the body becomes read-only — enforced in the service layer, not
   merely by hiding the textarea.
 
+### Reminders
+
+- Per-letter reminder window: off, on the day, 7 days, 30 days, or a **custom
+  number of days** (1–3650).
+- A sealed letter that enters its reminder window appears on the home page as an
+  **in-app reminder** with the remaining days and the open date. This needs no
+  permission and works every time the site is opened.
+- Browser notifications are opt-in, separately, in Settings — and the UI states
+  plainly that they cannot be guaranteed once the site is closed.
+
 ### Time capsules
 
 Full multimedia capsules with seven templates (1 year, 5 years, 10 years, today's
@@ -344,9 +354,9 @@ Unit + integration (Vitest, fake-indexeddb)      85 passed
   ├─ utils/misc.test.ts               11  formatting, i18n, email-not-configured
   └─ services/storage/blobs.test.ts    4  base64 <-> ArrayBuffer, persisted bytes
 
-End-to-end, local build (Playwright, real browser + real IndexedDB)   52 passed
-  desktop-chromium (1440×900)       26 passed
-  mobile-safari (iPhone 13)         26 passed
+End-to-end, local build (Playwright, real browser + real IndexedDB)   58 passed
+  desktop-chromium (1440×900)       29 passed
+  mobile-safari (iPhone 13)         29 passed
 
 End-to-end, live deployment (github.io production URL)               18 passed
   prod-desktop                       9 passed
@@ -358,7 +368,10 @@ auto-save → seal → archive, past-date rejection, draft resumption, capsule
 creation, due-letter open (body hidden before, visible after), early-unseal
 confirmation, reply creation, share card PNG download **with the body asserted
 absent**, JSON export → wipe → import round-trip, theme + language switching with
-reload persistence, and the local-storage privacy notice.
+reload persistence, the local-storage privacy notice, attachment upload that
+really lands in IndexedDB, real Markdown/PDF downloads, and the reminder window
+(in-window letters appear, out-of-window and disabled ones do not, custom day
+counts persist).
 
 `e2e/mobile-audit.spec.ts` adds an automated mobile audit on a 390×844 viewport:
 zero horizontal overflow on every route, minimum touch-target sizes, no bottom-nav

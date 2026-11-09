@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, PackageOpen, PenLine, Shuffle, Sparkles } from 'lucide-react';
+import { ArrowRight, BellRing, PackageOpen, PenLine, Shuffle, Sparkles } from 'lucide-react';
 import { useAppStore } from '@/stores/app';
 import { useI18n } from '@/i18n/useI18n';
 import { Envelope } from '@/components/Envelope';
@@ -9,11 +9,13 @@ import { Countdown } from '@/components/Countdown';
 import { AuthorXLink } from '@/components/AuthorXLink';
 import { formatDate, humanizeRemaining, parseISO } from '@/utils/date';
 import { excerpt } from '@/utils/misc';
+import { useNow } from '@/hooks/useNow';
 
 export function HomePage() {
   const letters = useAppStore((s) => s.letters);
   const { t, lang } = useI18n();
   const navigate = useNavigate();
+  const now = useNow(60_000);
 
   const stats = useMemo(() => {
     const sealed = letters.filter((l) => l.status === 'SEALED');
@@ -29,6 +31,21 @@ export function HomePage() {
       .sort((a, b) => b - a)[0];
     return { sealed: sealed.length, opened: opened.length, ready: ready.length, longest: longest ?? 0 };
   }, [letters]);
+
+  /** 处于提醒窗口内的已封存信件 —— 站内提醒（不需要浏览器授权） */
+  const reminders = useMemo(() => {
+    return letters
+      .filter((l) => l.status === 'SEALED' && l.reminder.enabled)
+      .map((l) => {
+        const at = parseISO(l.scheduledOpenAt);
+        if (!at) return null;
+        const days = Math.ceil((at.getTime() - now) / 86_400_000);
+        if (days < 0 || days > l.reminder.daysBefore) return null;
+        return { id: l.id, title: l.title, at, days };
+      })
+      .filter((r): r is { id: string; title: string; at: Date; days: number } => r !== null)
+      .sort((a, b) => a.days - b.days);
+  }, [letters, now]);
 
   /* 首页展示的信封：优先展示最近封存的一封，否则展示占位信封 */
   const featured = useMemo(() => {
@@ -186,6 +203,47 @@ export function HomePage() {
             </span>
             <ArrowRight className="h-4 w-4 shrink-0 text-secondary transition-transform group-hover:translate-x-0.5" />
           </Link>
+        </section>
+      )}
+
+      {/* ───────── 提醒窗口内的信件（站内提醒，不需要浏览器授权） ───────── */}
+      {reminders.length > 0 && (
+        <section className="container-page pb-8">
+          <div
+            className="rounded-xl border p-4 sm:p-5"
+            style={{ borderColor: 'var(--border-subtle)' }}
+          >
+            <div className="flex items-center gap-2">
+              <BellRing className="h-3.5 w-3.5" style={{ color: 'var(--accent)' }} />
+              <p className="font-mono text-[0.62rem] tracking-[0.18em] uppercase text-muted">
+                {t('home.reminderTitle')}
+              </p>
+            </div>
+            <ul className="mt-3 space-y-2">
+              {reminders.map((r) => (
+                <li key={r.id}>
+                  <Link
+                    to={`/letter/${r.id}`}
+                    className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5 transition-colors hover:border-[var(--accent)]"
+                    style={{ borderColor: 'var(--border-subtle)' }}
+                  >
+                    <span className="min-w-0 truncate text-sm">
+                      {r.title || '—'}
+                    </span>
+                    <span className="shrink-0 font-mono text-[0.65rem] tabular-nums text-muted">
+                      {t('home.reminderIn', {
+                        n: r.days,
+                        d: formatDate(r.at, lang, 'numeric'),
+                      })}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-2.5 text-[0.65rem] leading-relaxed text-muted">
+              {t('home.reminderNote')}
+            </p>
+          </div>
         </section>
       )}
 
