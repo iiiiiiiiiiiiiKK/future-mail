@@ -250,4 +250,37 @@ test.describe('生产环境移动端', () => {
     });
     expect(stored).toBeGreaterThanOrEqual(1);
   });
+
+  test('线上站内提醒窗口生效', async ({ page }) => {
+    const now = Date.now();
+    await seed(page, {
+      id: 'prod-reminder-1',
+      serial: 'FM-2026-PRD3',
+      title: '线上提醒窗口信件',
+      recipient: '未来的我',
+      content: '线上提醒验证。',
+      createdAt: new Date(now - 86400000).toISOString(),
+      updatedAt: new Date(now - 86400000).toISOString(),
+      /* 2 天后开启 + 提前 7 天提醒 → 处于窗口内 */
+      scheduledOpenAt: new Date(now + 86400000 * 2).toISOString(),
+      sealedAt: new Date(now - 86400000).toISOString(),
+      status: 'SEALED',
+      kind: 'future-self',
+      cover: 'night',
+      tags: [],
+      attachments: [],
+      mood: {},
+      privacy: 'private',
+      reminder: { enabled: true, daysBefore: 7 },
+      replies: [],
+      starred: false,
+      origin: 'local',
+      version: 2,
+    });
+
+    await page.goto(`${PROD}#/`);
+    await expect(page.getByText('即将开启的提醒')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText('线上提醒窗口信件').first()).toBeVisible();
+    await expect(page.getByText(/还有 \d+ 天/)).toBeVisible();
+  });
 });

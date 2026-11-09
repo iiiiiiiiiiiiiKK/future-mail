@@ -358,9 +358,9 @@ End-to-end, local build (Playwright, real browser + real IndexedDB)   58 passed
   desktop-chromium (1440×900)       29 passed
   mobile-safari (iPhone 13)         29 passed
 
-End-to-end, live deployment (github.io production URL)               18 passed
-  prod-desktop                       9 passed
-  prod-mobile (iPhone 13)            9 passed
+End-to-end, live deployment (github.io production URL)               20 passed
+  prod-desktop                      10 passed
+  prod-mobile (iPhone 13)           10 passed
 ```
 
 E2E covers: X author link on desktop **and** in the mobile menu, compose →

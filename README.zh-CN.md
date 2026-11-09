@@ -332,9 +332,9 @@ npm run build
   desktop-chromium（1440×900）       29 通过
   mobile-safari（iPhone 13）         29 通过
 
-端到端，线上部署（github.io 生产地址）                        18 通过
-  prod-desktop                       9 通过
-  prod-mobile（iPhone 13）            9 通过
+端到端，线上部署（github.io 生产地址）                        20 通过
+  prod-desktop                      10 通过
+  prod-mobile（iPhone 13）           10 通过
 ```
 
 E2E 覆盖：桌面端**与**移动端菜单中的作者 X 链接、写信 → 自动保存 → 封存 → 档案、
