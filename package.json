@@ -12,7 +12,8 @@
     "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit",
     "test:e2e:prod": "playwright test -c playwright.prod.config.ts",
-    "test:all": "npm run typecheck && npm run lint && npm test && npm run build && npm run test:e2e"
+    "test:all": "npm run typecheck && npm run lint && npm test && npm run build && npm run test:e2e",
+    "screenshots": "playwright test -c playwright.shots.config.ts"
   },
   "keywords": [
     "time-capsule",

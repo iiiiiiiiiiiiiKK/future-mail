@@ -189,14 +189,17 @@ export function AppShell({ children }: { children: ReactNode }) {
         )}
       </header>
 
-      <main className="flex-1">{children}</main>
+      {/* 主内容：移动端为固定底部导航预留空间，避免内容被遮挡 */}
+      <main className="flex-1 pb-[calc(56px+env(safe-area-inset-bottom,0px))] md:pb-0">
+        {children}
+      </main>
 
-      {/* 移动端底部导航 */}
+      {/* 移动端底部导航：固定贴住视口底部（sticky 会在短页面上浮到内容中间） */}
       <nav
-        className="safe-bottom sticky bottom-0 z-40 border-t backdrop-blur-xl md:hidden"
+        className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t backdrop-blur-xl md:hidden"
         style={{
           borderColor: 'var(--border-subtle)',
-          backgroundColor: 'color-mix(in srgb, var(--bg-app) 90%, transparent)',
+          backgroundColor: 'color-mix(in srgb, var(--bg-app) 92%, transparent)',
         }}
         aria-label="Mobile"
       >

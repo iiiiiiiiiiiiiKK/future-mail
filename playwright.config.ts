@@ -8,7 +8,8 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './e2e',
   /* production.spec.ts 针对线上地址，需用 playwright.prod.config.ts 运行 */
-  testIgnore: /production\.spec\.ts/,
+  /* screenshots.spec.ts 是「截图生成器」而非断言测试，用 npm run screenshots 单独执行 */
+  testIgnore: [/production\.spec\.ts/, /screenshots\.spec\.ts/],
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,

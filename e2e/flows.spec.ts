@@ -65,20 +65,28 @@ test.describe('首页与导航', () => {
     if (useMobileNav) {
       const archiveInNav = mobileNav.getByRole('link', { name: '我的档案' });
       await expect(archiveInNav).toHaveAttribute('href', '#/archive');
-      await archiveInNav.click({ force: true });
+      /* 底部导航是 sticky 元素；应用初始化（读取 IndexedDB）后可能重排一次，
+         因此对「点击 → 导航」做一次有限重试，而不是断言必须一次命中。 */
+      await expect(async () => {
+        await archiveInNav.click();
+        await expect(page).toHaveURL(/#\/archive/, { timeout: 3_000 });
+      }).toPass({ timeout: 20_000 });
     } else {
       await page.getByRole('link', { name: '我的档案' }).first().click();
+      await expect(page).toHaveURL(/archive/);
     }
-    await expect(page).toHaveURL(/archive/);
 
     /* 时间轴同样可达 */
     await page.goto('/#/');
     if (useMobileNav) {
-      await mobileNav.getByRole('link', { name: '时间轴' }).click({ force: true });
+      await expect(async () => {
+        await mobileNav.getByRole('link', { name: '时间轴' }).click();
+        await expect(page).toHaveURL(/#\/timeline/, { timeout: 3_000 });
+      }).toPass({ timeout: 20_000 });
     } else {
       await page.getByRole('link', { name: '时间轴' }).first().click();
+      await expect(page).toHaveURL(/timeline/);
     }
-    await expect(page).toHaveURL(/timeline/);
   });
 });
 
