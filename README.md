@@ -162,7 +162,7 @@ No backend, no API key, no database required. Open the page and start writing.
 | `npm run preview` | Serve the production build locally |
 | `npm run typecheck` | TypeScript only, no emit |
 | `npm run lint` | ESLint (flat config, type-aware rules for hooks) |
-| `npm test` | Vitest unit + integration tests (81 tests) |
+| `npm test` | Vitest unit + integration tests (85 tests) |
 | `npm run test:watch` | Vitest in watch mode |
 | `npm run test:e2e` | Playwright end-to-end tests (desktop + iPhone 13) |
 
@@ -334,20 +334,21 @@ npm run build
 ## Testing
 
 ```
-Unit + integration (Vitest, fake-indexeddb)      81 passed
+Unit + integration (Vitest, fake-indexeddb)      85 passed
   ├─ utils/date.test.ts              23  calendar maths, leap years, DST, offsets
   ├─ services/storage/letters.test.ts 26  state machine, seal, due, open, reply chain
   ├─ services/import/import.test.ts   13  strict validation, dedupe, no overwrite
   ├─ services/attachments.test.ts      8  type/size validation, blob lifecycle
-  └─ utils/misc.test.ts               11  formatting, i18n, email-not-configured
+  ├─ utils/misc.test.ts               11  formatting, i18n, email-not-configured
+  └─ services/storage/blobs.test.ts    4  base64 <-> ArrayBuffer, persisted bytes
 
-End-to-end, local build (Playwright, real browser + real IndexedDB)   46 passed
-  desktop-chromium (1440×900)       23 passed
-  mobile-safari (iPhone 13)         23 passed
+End-to-end, local build (Playwright, real browser + real IndexedDB)   56 passed
+  desktop-chromium (1440×900)       28 passed
+  mobile-safari (iPhone 13)         28 passed
 
-End-to-end, live deployment (github.io production URL)               16 passed
-  prod-desktop                       8 passed
-  prod-mobile (iPhone 13)            8 passed
+End-to-end, live deployment (github.io production URL)               18 passed
+  prod-desktop                       9 passed
+  prod-mobile (iPhone 13)            9 passed
 ```
 
 E2E covers: X author link on desktop **and** in the mobile menu, compose →

@@ -152,7 +152,7 @@ npm run dev          # http://localhost:5173
 | `npm run preview` | 本地预览生产构建 |
 | `npm run typecheck` | 仅 TypeScript 检查 |
 | `npm run lint` | ESLint（flat config，含 hooks 规则） |
-| `npm test` | Vitest 单元 + 集成测试（81 个） |
+| `npm test` | Vitest 单元 + 集成测试（85 个） |
 | `npm run test:watch` | Vitest 监听模式 |
 | `npm run test:e2e` | Playwright 端到端测试（桌面 + iPhone 13） |
 
@@ -310,20 +310,21 @@ npm run build
 ## 测试
 
 ```
-单元 + 集成（Vitest + fake-indexeddb）        81 通过
+单元 + 集成（Vitest + fake-indexeddb）        85 通过
   ├─ utils/date.test.ts              23  日历运算、闰年、时区、快捷偏移
   ├─ services/storage/letters.test.ts 26  状态机、封存、到期、开启、回信链
   ├─ services/import/import.test.ts   13  严格校验、去重、不覆盖
   ├─ services/attachments.test.ts      8  类型/大小校验、blob 生命周期
-  └─ utils/misc.test.ts               11  格式化、i18n、邮件未配置状态
+  ├─ utils/misc.test.ts               11  格式化、i18n、邮件未配置状态
+  └─ services/storage/blobs.test.ts    4  base64 ↔ ArrayBuffer、持久化字节校验
 
-端到端，本地构建（Playwright，真实浏览器 + 真实 IndexedDB）  46 通过
-  desktop-chromium（1440×900）       23 通过
-  mobile-safari（iPhone 13）         23 通过
+端到端，本地构建（Playwright，真实浏览器 + 真实 IndexedDB）  56 通过
+  desktop-chromium（1440×900）       28 通过
+  mobile-safari（iPhone 13）         28 通过
 
-端到端，线上部署（github.io 生产地址）                        16 通过
-  prod-desktop                       8 通过
-  prod-mobile（iPhone 13）            8 通过
+端到端，线上部署（github.io 生产地址）                        18 通过
+  prod-desktop                       9 通过
+  prod-mobile（iPhone 13）            9 通过
 ```
 
 E2E 覆盖：桌面端**与**移动端菜单中的作者 X 链接、写信 → 自动保存 → 封存 → 档案、
